@@ -1,0 +1,15 @@
+.repl-container { height: 100%; display: flex; flex-direction: column; }
+.output { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+.welcome { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.history-entry { animation: messageIn 0.2s ease-out; max-width: 60%; }
+@keyframes messageIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+.message-row { display: flex; gap: 0.5rem; align-items: flex-start; }
+.prompt { color: #10b981; font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; }
+.user-message { font-family: 'IBM Plex Mono', monospace; font-size: 0.8125rem; }
+.response-row { padding-left: 1.25rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.8125rem; }
+.error-row { font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; }
+.input-area { flex-shrink: 0; }
+.input-wrapper { display: flex; align-items: center; gap: 0.5rem; }
+.code-input { flex: 1; padding: 0.625rem 0.5rem; background: transparent; border: none; }
+.execute-btn { padding: 0.5rem 1rem; }
+.hint-text { max-width: 800px; margin: 0.625rem auto 0; }
