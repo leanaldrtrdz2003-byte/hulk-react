@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HULK Interpreter - Presentación Científica</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #030305;
+      --bg-secondary: #08080b;
+      --bg-tertiary: #0e0e12;
+      --bg-card: rgba(255, 255, 255, 0.025);
+      --border-subtle: rgba(255, 255, 255, 0.06);
+      --border-mid: rgba(255, 255, 255, 0.1);
+      --text-primary: #f4f4f5;
+      --text-secondary: rgba(255, 255, 255, 0.55);
+      --text-muted: rgba(255, 255, 255, 0.35);
+      --accent: #10b981;
+      --accent-glow: rgba(16, 185, 129, 0.2);
+      --accent-subtle: rgba(16, 185, 129, 0.08);
+      --error: #f87171;
+      --warning: #fbbf24;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Background Effect */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: 
+        radial-gradient(ellipse 80% 50% at 50% 0%, rgba(16, 185, 129, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 40% at 100% 100%, rgba(16, 185, 129, 0.03) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    /* Title Section */
+    .title-section {
+      text-align: center;
+      margin-bottom: 4rem;
+      padding-bottom: 3rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .logo {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, var(--accent), #059669);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 600;
+      font-size: 1.5rem;
+      color: var(--bg-primary);
+      margin: 0 auto 1.5rem;
+      box-shadow: 
+        0 0 40px rgba(16, 185, 129, 0.3),
+        0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, var(--text-primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.125rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    /* Section Styles */
+    section {
+      margin-bottom: 3rem;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    h2::before {
+      content: '';
+      width: 4px;
+      height: 1.5rem;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+
+    p {
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+    }
+
+    /* Code Blocks */
+    pre {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      overflow-x: auto;
+      margin-bottom: 1rem;
+    }
+
+    code {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.875rem;
+      color: var(--accent);
+    }
+
+    .comment {
+      color: var(--text-muted);
+    }
+
+    .keyword {
+      color: #c792ea;
+    }
+
+    .string {
+      color: #c3e88d;
+    }
+
+    .number {
+      color: #f78c6c;
+    }
+
+    /* Feature Cards */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 1.25rem;
+      transition: all 0.2s ease;
+    }
+
+    .feature-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-mid);
+      transform: translateY(-2px);
+    }
+
+    .feature-card h4 {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+
+    .feature-card p {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      margin-bottom: 0;
+    }
+
+    /* Lists */
+    ul, ol {
+      margin-bottom: 1rem;
+      padding-left: 1.5rem;
+      color: var(--text-secondary);
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+    }
+
+    li::marker {
+      color: var(--accent);
+    }
+
+    /* Steps */
+    .steps {
+      counter-reset: step;
+    }
+
+    .step {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+    }
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      background: var(--accent);
+      color: var(--bg-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.875rem;
+      flex-shrink: 0;
+    }
+
+    .step-content h4 {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .step-content p {
+      font-size: 0.875rem;
+      margin-bottom: 0;
+    }
+
+    /* Improvements */
+    .improvement {
+      background: var(--bg-secondary);
+      border-left: 3px solid var(--accent);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .improvement h4 {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .priority {
+      font-size: 0.625rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .priority.high {
+      background: rgba(248, 113, 113, 0.2);
+      color: var(--error);
+    }
+
+    .priority.medium {
+      background: rgba(251, 191, 36, 0.2);
+      color: var(--warning);
+    }
+
+    .priority.low {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--accent);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding-top: 3rem;
+      margin-top: 3rem;
+      border-top: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-subtle);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--border-mid);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Title Section -->
+    <header class="title-section">
+      <div class="logo">H</div>
+      <h1>HULK Interpreter</h1>
+      <p class="subtitle">Intérprete del lenguaje HULK con interfaz web moderna</p>
+    </header>
+
+    <!-- ¿Qué es? -->
+    <section id="que-es">
+      <h2>¿Qué es HULK?</h2>
+      <p>
+        <strong>HULK</strong> (Havana University Language for Kompilers) es un lenguaje de programación educativo desarrollado en la Universidad de La Habana como proyecto del curso de programación de MatCom.
+      </p>
+      <p>
+        Este proyecto es una <strong>reimplementación web</strong> del intérprete original, construido con <strong>React + TypeScript</strong>, que brings el lenguaje HULK al navegador con una interfaz moderna estilo chatbot.
+      </p>
+      <div class="features-grid">
+        <div class="feature-card">
+          <h4>🎯 Propósito Educativo</h4>
+          <p>Diseñado para enseñar conceptos de compiladores e intérpretes</p>
+        </div>
+        <div class="feature-card">
+          <h4>🌐 Accesible Web</h4>
+          <p>Ejecuta código HULK directamente en el navegador</p>
+        </div>
+        <div class="feature-card">
+          <h4>✨ UI Moderna</h4>
+          <p>Interfaz estilo chat con diseño premium minimalista</p>
+        </div>
+        <div class="feature-card">
+          <h4>⚡ Funcional Completo</h4>
+          <p>Soporta funciones, recursión y expresiones complejas</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Características -->
+    <section id="caracteristicas">
+      <h2>Características del Lenguaje</h2>
+      
+      <h3>Tipos de Datos</h3>
+      <ul>
+        <li><strong>Números:</strong> enteros y decimales (ej: <code>42</code>, <code>3.14</code>)</li>
+        <li><strong>Strings:</strong> texto entre comillas (ej: <code>"Hola mundo"</code>)</li>
+        <li><strong>Booleanos:</strong> <code>true</code> / <code>false</code></li>
+        <li><strong>Constantes:</strong> <code>PI</code> (π) y <code>E</code> (e)</li>
+      </ul>
+
+      <h3>Operadores</h3>
+      <div class="features-grid">
+        <div class="feature-card">
+          <h4>Aritméticos</h4>
+          <p><code>+ - * / % ^</code></p>
+        </div>
+        <div class="feature-card">
+          <h4>Comparación</h4>
+          <p><code>== != < <= > >=</code></p>
+        </div>
+        <div class="feature-card">
+          <h4>Strings</h4>
+          <p><code>@</code> concatenación</p>
+        </div>
+      </div>
+
+      <h3>Construcciones del Lenguaje</h3>
+      <pre><code><span class="comment">// Funciones</span>
+<span class="keyword">function</span> fib(n) <span class="keyword">=></span> <span class="keyword">if</span> (n > 1) fib(n-1) + fib(n-2) <span class="keyword">else</span> 1;
+fib(10)  <span class="comment">// 89</span>
+
+<span class="comment">// Let bindings</span>
+<span class="keyword">let</span> x = 5 <span class="keyword">in</span> x * 2  <span class="comment">// 10</span>
+
+<span class="comment">// If expressions</span>
+<span class="keyword">if</span> (x > 0) <span class="string">"positivo"</span> <span class="keyword">else</span> <span class="string">"negativo"</span></code></pre>
+
+      <h3>Funciones Built-in</h3>
+      <ul>
+        <li><code>print(expr)</code> - Imprime y retorna el valor</li>
+        <li><code>sin(angulo)</code> - Seno trigonométrico</li>
+        <li><code>cos(angulo)</code> - Coseno trigonométrico</li>
+        <li><code>log(base, valor)</code> - Logaritmo</li>
+      </ul>
+    </section>
+
+    <!-- Cómo Usarlo -->
+    <section id="uso">
+      <h2>Cómo Usarlo</h2>
+      
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h4>Clona el repositorio</h4>
+            <p>git clone https://github.com/leanaldrtrdz2003-byte/hulk-react.git</p>
+          </div>
+        </div>
+        
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h4>Instala dependencias</h4>
+            <p>npm install</p>
+          </div>
+        </div>
+        
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h4>Inicia el servidor de desarrollo</h4>
+            <p>npm run dev</p>
+          </div>
+        </div>
+        
+        <div class="step">
+          <div class="step-number">4</div>
+          <div class="step-content">
+            <h4>¡Escribe código HULK!</h4>
+            <p>Abre http://localhost:5173 en tu navegador</p>
+          </div>
+        </div>
+      </div>
+
+      <h3>Comandos</h3>
+      <ul>
+        <li><code>/clear</code> - Limpia el historial del REPL</li>
+        <li>Presiona <code>Enter</code> para ejecutar</li>
+      </ul>
+    </section>
+
+    <!-- Mejoras Futuras -->
+    <section id="mejoras">
+      <h2>Cómo Mejorarlo</h2>
+      <p>El proyecto tiene mucho potencial de crecimiento. Aquí están las áreas prioritarias:</p>
+
+      <div class="improvement">
+        <h4>🎨 Interfaz de Usuario <span class="priority high">Alta</span></h4>
+        <ul>
+          <li>Modo oscuro/claro conmutabile</li>
+          <li>Temas personalizables (colores, fuentes)</li>
+          <li>Code editor con highlighting de sintaxis (Monaco/CodeMirror)</li>
+          <li>Autocompletado de funciones y palabras clave</li>
+          <li>Animaciones suaves y transiciones</li>
+        </ul>
+      </div>
+
+      <div class="improvement">
+        <h4>⚙️ Funcionalidad del Intérprete <span class="priority high">Alta</span></h4>
+        <ul>
+          <li>Arrays y estructuras de datos</li>
+          <li>Ámbito de variables (scope) más robusto</li>
+          <li>Funciones lambda/anónimas</li>
+          <li>Tipos de datos personalizados</li>
+          <li>Biblioteca estándar expandida</li>
+        </ul>
+      </div>
+
+      <div class="improvement">
+        <h4>🔧 Herramientas de Desarrollo <span class="priority medium">Media</span></h4>
+        <ul>
+          <li>Depurador con breakpoints y step-by-step</li>
+          <li>Console interactiva con autocomplete</li>
+          <li>Persistencia de código en localStorage</li>
+          <li>Exportar/importar código</li>
+        </ul>
+      </div>
+
+      <div class="improvement">
+        <h4>📚 Documentación y Educación <span class="priority medium">Media</span></h4>
+        <ul>
+          <li>Tutorial interactivo integrado</li>
+          <li>Ejemplos preloadeds con explicaciones</li>
+          <li>Documentación de cada función built-in</li>
+          <li>Wiki del lenguaje HULK</li>
+        </ul>
+      </div>
+
+      <div class="improvement">
+        <h4>🚀 Funcionalidades Avanzadas <span class="priority low">Baja</span></h4>
+        <ul>
+          <li>Modo servidor con API REST</li>
+          <li>Compilación a JavaScript/WASM</li>
+          <li>Intérprete en Rust para mejor performance</li>
+          <li>IDE como Plugin de VSCode</li>
+          <li> Playground embebible (Web Component)</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Conclusión -->
+    <section id="conclusion">
+      <h2>Conclusión</h2>
+      <p>
+        Este proyecto demuestra cómo un lenguaje educativo puede cobran nueva vida através de tecnologías web modernas. El código está estructurao para ser extensible, con un intérprete claro y una UI modular.
+      </p>
+      <p>
+        Las posibilidades de mejora son prácticamente infinitas, desde mejoras visuales hasta funcionalidades avanzadas del lenguaje. ¡La invitación está abierta para contribuir y hacer crecer este proyecto!
+      </p>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>Presentacoón creada para el proyecto HULK Interpreter</p>
+      <p>
+        <a href="https://github.com/leanaldrtrdz2003-byte/hulk-react" target="_blank">Ver en GitHub</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>
